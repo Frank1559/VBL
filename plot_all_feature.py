@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # load data
-x = pd.read_csv("feature_VBL-VA001.csv", header=None)
+x = pd.read_csv("data/feature_VBL-VA001.csv", header=None)
 
 # extract normal condition, 1st 1000 rows
 x_norm = x.iloc[:1000, :]

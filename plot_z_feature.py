@@ -4,20 +4,23 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# load data
-x = pd.read_csv("feature_VBL-VA001.csv", header=None)
+# 讀取label_VBL-VA001.csv檔案
+label_data = pd.read_csv('data/label_VBL-VA001.csv', header=None)
 
-# extract normal condition, 1st 1000 rows
-x_norm = x.iloc[:1000, :]
+# 讀取feature_VBL-VA001.csv檔案
+feature_data = pd.read_csv('data/feature_VBL-VA001.csv', header=None)
 
-# extract misalignment condition, next 1000 rows
-x_mis = x.iloc[1000:2000, :]
+# 根據label的值，將feature分類到不同的DataFrame中
+x_norm = feature_data.loc[label_data[0] == 0]
+x_mis = feature_data.loc[label_data[0] == 1]
+x_unb = feature_data.loc[label_data[0] == 2]
+x_bear = feature_data.loc[label_data[0] == 3]
 
-# extract unbalance condition, next 1000 rows
-x_unb = x.iloc[2000:3000, :]
-
-# extract bearing condition, last 1000 rows
-x_bear = x.iloc[3000:4000, :]
+# 印出每個類別有幾個rows
+print('normal:', len(x_norm))
+print('misalignment:', len(x_mis))
+print('unbalance:', len(x_unb))
+print('bearing:', len(x_bear))
 
 # plot all nine features
 feat_name = ['Shape Factor', 'RMS', 'Impulse Factor', 'Peak to Peak', 'Kurtosis', 'Crest Factor', 'Mean', 'Standard Deviation', 'Skewness']
@@ -32,10 +35,10 @@ for i, n in enumerate(feat_n):
     y3 = x_unb.iloc[:, n]
     y4 = x_bear.iloc[:, n]
 
-    y1 = y1.values.flatten()
-    y2 = y2.values.flatten()
-    y3 = y3.values.flatten()
-    y4 = y4.values.flatten()
+    y1 = y1.values.flatten()[:45000]
+    y2 = y2.values.flatten()[:45000]
+    y3 = y3.values.flatten()[:45000]
+    y4 = y4.values.flatten()[:45000]
 
     # helper for x axis
     x = np.arange(0,len(y1),1)
@@ -50,10 +53,10 @@ for i, n in enumerate(feat_n):
     y44 = movingaverage(y4, 30)
 
     # print(f"i = {i}, n = {n}")
-    axs[i].plot(x, y11, x, y22, x, y33, x, y44)
+    axs[i].plot(x, y11, x, y22, x, y33, x, y44, linewidth=0.25)
     # Decorate
     axs[i].set_title(feat_name[i])
-    axs[i].set_xlim(20,980)
+    axs[i].set_xlim(0,45000)
     if i <= 5:
         # axs[i].get_xaxis().set_visible(False)
         axs[i].axes.xaxis.set_ticklabels([])

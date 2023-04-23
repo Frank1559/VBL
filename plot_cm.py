@@ -9,32 +9,32 @@ from sklearn.model_selection import train_test_split
 
 # load data
 # load data hasil ekstraksi fitur fft
-x = pd.read_csv("feature_VBL-VA001.csv", header=None)
+x = pd.read_csv("data/feature_VBL-VA001.csv", header=None)
 
 # load label
-y = pd.read_csv("label_VBL-VA001.csv", header=None)
+y = pd.read_csv("data/label_VBL-VA001.csv", header=None)
 
 # make 1D array to avoid warning
 y = pd.Series.ravel(y)
 
 X_train, X_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.2, random_state=42, shuffle=True
+    x, y, test_size=0.5, random_state=42, shuffle=True
 )
 
 # KNN
-knn = KNeighborsClassifier(n_neighbors=2)
+knn = KNeighborsClassifier(n_neighbors=5)
 out_knn = knn.fit(X_train, y_train)
 print("KNN Accuracy on Train Data: {}".format(knn.score(X_train, y_train)))
 print("KNN Accuracy on Test Data: {}".format(knn.score(X_test, y_test)))
 
 # SVM Machine Learning
-svm = SVC(C=86, kernel='rbf', class_weight='balanced', random_state=None)
+svm = SVC(C=98, kernel='rbf', class_weight='balanced', random_state=None)
 out_svm = svm.fit(X_train, y_train)
 print("SVM accuracy is {} on Train Dataset".format(svm.score(X_train, y_train)))
 print("SVM accuracy is {} on Test Dataset".format(svm.score(X_test, y_test)))
 
 # Naive Bayes
-model = GaussianNB(var_smoothing=1e-11)
+model = GaussianNB(var_smoothing=1e-8)
 out_gnb = model.fit(X_train, y_train)
 gnb_pred = model.predict(X_test)
 

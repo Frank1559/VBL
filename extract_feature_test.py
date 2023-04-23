@@ -1,7 +1,7 @@
 # Script to train
 
 # importation
-from numpy.fft import rfft, rfftfreq
+from numpy.fft import rfft, rfftfreq, irfft
 from sklearn import preprocessing
 import numpy as np
 import os
@@ -53,6 +53,18 @@ def FFT(data):
     freq = rfftfreq(n, dt)
     data = abs(data).T
     return data
+
+
+def cepstrum(data):
+    '''Cepstrum features'''
+    data = np.asarray(data)
+    n = len(data)
+    dt = 1/20000 # time increment in each data
+    data_fft = rfft(data) * dt
+    log_data_fft = np.log(abs(data_fft))
+    data_cepstrum = irfft(log_data_fft)
+    return abs(data_cepstrum)[:n//2]
+
 
 # Feature Extraction function
 def std(data):
@@ -272,21 +284,21 @@ data_bearing_z = data_4z(imnormal_bearing).T.dropna(axis=1)
 
 # Doing FFT
 # Preprocessing FFT
-fft_1x = FFT(data_normal_x)
-fft_1y = FFT(data_normal_y)
-fft_1z = FFT(data_normal_z)
+fft_1x = cepstrum(data_normal_x)
+fft_1y = cepstrum(data_normal_y)
+fft_1z = cepstrum(data_normal_z)
 
-fft_2x = FFT(data_misalignment_x)
-fft_2y = FFT(data_misalignment_y)
-fft_2z = FFT(data_misalignment_z)
+fft_2x = cepstrum(data_misalignment_x)
+fft_2y = cepstrum(data_misalignment_y)
+fft_2z = cepstrum(data_misalignment_z)
 
-fft_3x = FFT(data_unbalance_x)
-fft_3y = FFT(data_unbalance_y)
-fft_3z = FFT(data_unbalance_z)
+fft_3x = cepstrum(data_unbalance_x)
+fft_3y = cepstrum(data_unbalance_y)
+fft_3z = cepstrum(data_unbalance_z)
 
-fft_4x = FFT(data_bearing_x)
-fft_4y = FFT(data_bearing_y)
-fft_4z = FFT(data_bearing_z)
+fft_4x = cepstrum(data_bearing_x)
+fft_4y = cepstrum(data_bearing_y)
+fft_4z = cepstrum(data_bearing_z)
 
 # merge data
 data_merged = np.concatenate((fft_1x, fft_2x, fft_3x, fft_4x,
@@ -519,7 +531,7 @@ x.shape
 
 # simpan data hasil ekstraksi fitur fft, will be very big, about 2GB
 fft_x = pd.DataFrame(x).to_csv(
-    'data/feature_VBL-VA001.csv', index=None, header=False)
+    'data/cepstrum_feature_VBL-VA001.csv', index=None, header=False)
 
 # Membuat label
 
@@ -533,4 +545,4 @@ y.shape
 
 # simpan label
 y_label = pd.DataFrame(y).to_csv(
-    'data/label_VBL-VA001.csv', index=None, header=False)
+    'data/cepstrum_label_VBL-VA001.csv', index=None, header=False)
